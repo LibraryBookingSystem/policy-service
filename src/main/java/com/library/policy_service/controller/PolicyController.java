@@ -1,6 +1,7 @@
 package com.library.policy_service.controller;
 
 import com.library.policy_service.dto.*;
+import com.library.common.security.annotation.RequiresRole;
 import com.library.policy_service.service.PolicyService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import java.util.List;
 
 /**
  * Controller for policy management endpoints
+ * Uses AOP annotations for RBAC authorization
  */
 @RestController
 @RequestMapping("/api/policies")
@@ -25,8 +27,10 @@ public class PolicyController {
     /**
      * Create a new policy
      * POST /api/policies
+     * Authorization: ADMIN only
      */
     @PostMapping
+    @RequiresRole({"ADMIN"})
     public ResponseEntity<PolicyResponse> createPolicy(@Valid @RequestBody CreatePolicyRequest request) {
         PolicyResponse response = policyService.createPolicy(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -35,8 +39,10 @@ public class PolicyController {
     /**
      * Get policy by ID
      * GET /api/policies/{id}
+     * Authorization: AUTHENTICATED
      */
     @GetMapping("/{id}")
+    @RequiresRole
     public ResponseEntity<PolicyResponse> getPolicyById(@PathVariable Long id) {
         PolicyResponse response = policyService.getPolicyById(id);
         return ResponseEntity.ok(response);
@@ -45,8 +51,10 @@ public class PolicyController {
     /**
      * Get all policies
      * GET /api/policies
+     * Authorization: AUTHENTICATED
      */
     @GetMapping
+    @RequiresRole
     public ResponseEntity<List<PolicyResponse>> getAllPolicies(
             @RequestParam(required = false) Boolean active) {
         List<PolicyResponse> policies;
@@ -61,8 +69,10 @@ public class PolicyController {
     /**
      * Update policy
      * PUT /api/policies/{id}
+     * Authorization: ADMIN only
      */
     @PutMapping("/{id}")
+    @RequiresRole({"ADMIN"})
     public ResponseEntity<PolicyResponse> updatePolicy(
             @PathVariable Long id,
             @Valid @RequestBody UpdatePolicyRequest request) {
@@ -73,8 +83,10 @@ public class PolicyController {
     /**
      * Delete policy
      * DELETE /api/policies/{id}
+     * Authorization: ADMIN only
      */
     @DeleteMapping("/{id}")
+    @RequiresRole({"ADMIN"})
     public ResponseEntity<Void> deletePolicy(@PathVariable Long id) {
         policyService.deletePolicy(id);
         return ResponseEntity.noContent().build();
@@ -83,8 +95,10 @@ public class PolicyController {
     /**
      * Validate a booking request against policies
      * POST /api/policies/validate
+     * Authorization: AUTHENTICATED
      */
     @PostMapping("/validate")
+    @RequiresRole
     public ResponseEntity<PolicyValidationResponse> validateBooking(
             @Valid @RequestBody ValidatePolicyRequest request) {
         PolicyValidationResponse response = policyService.validateBooking(request);
@@ -94,12 +108,14 @@ public class PolicyController {
     /**
      * Health check endpoint
      * GET /api/policies/health
+     * Authorization: PUBLIC
      */
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Policy Service is running!");
     }
 }
+
 
 
 
