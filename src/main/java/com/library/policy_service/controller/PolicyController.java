@@ -95,10 +95,10 @@ public class PolicyController {
     /**
      * Validate a booking request against policies
      * POST /api/policies/validate
-     * Authorization: AUTHENTICATED
+     * Authorization: PUBLIC (Internal service call - called by booking-service)
+     * Note: No @RequiresRole annotation - this is a public endpoint for inter-service calls
      */
     @PostMapping("/validate")
-    @RequiresRole
     public ResponseEntity<PolicyValidationResponse> validateBooking(
             @Valid @RequestBody ValidatePolicyRequest request) {
         PolicyValidationResponse response = policyService.validateBooking(request);
