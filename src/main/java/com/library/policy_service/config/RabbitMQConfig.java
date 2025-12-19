@@ -16,6 +16,7 @@ public class RabbitMQConfig {
     
     // Exchange names
     public static final String POLICY_EXCHANGE = "policy.events";
+    public static final String AUDIT_EXCHANGE = "audit.events";
     
     // Queue names
     public static final String POLICY_CREATED_QUEUE = "policy.created";
@@ -28,11 +29,16 @@ public class RabbitMQConfig {
     public static final String POLICY_DELETED_ROUTING_KEY = "policy.deleted";
     
     /**
-     * Create topic exchange for policy events
+     * Create topic exchanges
      */
     @Bean
     public TopicExchange policyExchange() {
         return new TopicExchange(POLICY_EXCHANGE);
+    }
+    
+    @Bean
+    public TopicExchange auditExchange() {
+        return new TopicExchange(AUDIT_EXCHANGE, true, false);
     }
     
     /**
